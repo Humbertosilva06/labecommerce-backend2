@@ -741,3 +741,4 @@ app.delete("/products/:id", (req: Request, res: Response) => {
     }
 
 })
+//teste
