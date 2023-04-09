@@ -1,4 +1,5 @@
 import { TProduct, TUser, TPurchase, CATEGORY } from "./types"
+
 //arrays de usuarios, produtos e compras
 export const users: TUser[] = [
     {
