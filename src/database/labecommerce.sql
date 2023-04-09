@@ -8,6 +8,7 @@ CREATE TABLE users(
     password TEXT NOT NULL
 );
 
+
 -- POPULANDO A TABELA --
 
     INSERT INTO users (id, name, email, password)
@@ -34,3 +35,71 @@ VALUES
 ("P003", "Boné masculino", 75.63, "Acessórios"),
 ("P004", "Notebook 17 Polegadas", 4500, "Eletrônicos"),
 ("P005", "Camiseta NBA Dallas Mavericks", 140.22, "Roupas e calçados");
+
+-- Get all Users--
+SELECT * FROM users;
+
+-- Get all products --
+SELECT * FROM products;
+
+-- Search products by name --
+
+SELECT * FROM products
+WHERE name LIKE "%Boné%";
+
+-- Create user --
+INSERT INTO users (id, name, email, password)
+VALUES
+("u004", "Rodolfo", "rodolfo@gmail.com", "554466");
+
+-- Create product --
+
+INSERT INTO products(id, name, price, category)
+VALUES
+("P006", "Brinco feminino", 5.12, "Acessórios");
+
+-- Get prodcuts by id --
+SELECT * FROM products
+WHERE id = "P002";
+
+-- Delete user by ID --
+DELETE FROM users
+WHERE id = "u004";
+
+-- Delete product by id --
+
+DELETE FROM products
+WHERE id = "P006";
+
+-- Edit user by id --
+UPDATE users
+SET id = "u010",
+    name = "Josefina",
+    email = "Josefina@josefina.com.br",
+    password = "778899"
+WHERE id = "u002";
+
+-- edit product by id--
+
+UPDATE products
+SET id = "P010",
+    name = "Playstation 5",
+    price = 4778.66,
+    category = "Eletrônicos"
+WHERE id = "P001";
+
+-- Get all users ordenado por email crescente --
+SELECT * FROM users
+ORDER BY email ASC;
+
+-- Geat all products versão 1: ordenado pela coluna price em ordem crescente; limita o resultado em 20 items iniciando pelo primeiro --
+
+SELECT * FROM products
+ORDER BY price ASC
+LIMIT 20;
+
+-- Get all products versão 2: seleção de um intevalo depreços (entre 100 e 300 por exemplo); retorna todos os produtos dentro do intervalo em ordem crescente
+
+SELECT * FROM products
+WHERE price >= 100 AND price <= 300
+ORDER BY price ASC;
