@@ -3,13 +3,15 @@ import { TProduct, TUser, TPurchase, CATEGORY } from "./types"
 //arrays de usuarios, produtos e compras
 export const users: TUser[] = [
     {
-        id: "joselito",
-        email: "joselito@gmail.com",
+        id: "u001",
+        name:"Maria",
+        email: "maria@gmail.com",
         password: "12345"
     },
     {
-        id: "hermes",
-        email: "hermes@gmail.com",
+        id: "u002",
+        name: "José",
+        email: "josé@gmail.com",
         password: "54321"
     },
 
@@ -37,13 +39,13 @@ export const products: TProduct[] = [
 
 export const purchase: TPurchase[] = [
     {
-        userId: "joselito",
+        userId: "u001",
         productId: "P001",
         quantity: 1,
         totalPrice: 1000
     },
     {
-        userId: "hermes",
+        userId: "u002",
         productId: "P002",
         quantity: 2,
         totalPrice: 300
@@ -53,11 +55,12 @@ export const purchase: TPurchase[] = [
 //funções:
 //1- criar novo usuario
 
-export const createUser = (id: string, email: string, password: string,) => {
+export const createUser = (id: string, name:string, email: string, password: string,) => {
 
     users.push(
         {
             id: id,
+            name:name,
             email: email,
             password: password
         }
