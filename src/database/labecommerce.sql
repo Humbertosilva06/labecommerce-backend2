@@ -73,11 +73,11 @@ WHERE id = "P006";
 
 -- Edit user by id --
 UPDATE users
-SET id = "u010",
+SET id = "u002",
     name = "Josefina",
     email = "Josefina@josefina.com.br",
     password = "778899"
-WHERE id = "u002";
+WHERE id = "u010";
 
 -- edit product by id--
 
@@ -103,3 +103,44 @@ LIMIT 20;
 SELECT * FROM products
 WHERE price >= 100 AND price <= 300
 ORDER BY price ASC;
+
+-- criação da tabela de pedidos --
+
+CREATE TABLE purchases(
+    id TEXT UNIQUE NOT NULL PRIMARY KEY,
+    total_price REAL NOT NULL,
+    paid INTEGER NOT NULL,
+    created_at TEXT,
+    delivered_at TEXT,
+    buyer_id TEXT NOT NULL,
+    FOREIGN KEY (buyer_id) REFERENCES users(id)
+);
+
+DROP Table purchases;
+
+INSERT INTO purchases (id,total_price,paid,created_at,delivered_at,buyer_id)
+VALUES
+("Ped001", 149.78, 0, NULL, NULL, "u001"),
+("Ped002", 1456.98, 0, NULL, NULL, "u002"),
+("Ped003", 55.30, 0, NULL, NULL, "u002"),
+("Ped004", 1200.24, 0, NULL, NULL, "u001" );
+
+UPDATE purchases
+SET delivered_at = DATETIME()
+WHERE id = "Ped003";
+
+
+SELECT
+    users.id,
+    users.name,
+    purchases.id,
+    purchases.buyer_id,
+    purchases.total_price,
+    purchases.created_at,
+    purchases.delivered_at,
+    purchases.paid     
+FROM purchases
+INNER JOIN users
+ON purchases.buyer_id = users.id
+WHERE buyer_id = "u002";
+
