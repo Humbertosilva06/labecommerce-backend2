@@ -82,11 +82,11 @@ WHERE id = "u010";
 -- edit product by id--
 
 UPDATE products
-SET id = "P010",
+SET id = "P001",
     name = "Playstation 5",
     price = 4778.66,
     category = "Eletrônicos"
-WHERE id = "P001";
+WHERE id = "P010";
 
 -- Get all users ordenado por email crescente --
 SELECT * FROM users
@@ -120,10 +120,12 @@ DROP Table purchases;
 
 INSERT INTO purchases (id,total_price,paid,created_at,delivered_at,buyer_id)
 VALUES
-("Ped001", 149.78, 0, NULL, NULL, "u001"),
-("Ped002", 1456.98, 0, NULL, NULL, "u002"),
-("Ped003", 55.30, 0, NULL, NULL, "u002"),
-("Ped004", 1200.24, 0, NULL, NULL, "u001" );
+("Ped001", 14057.32, 0, NULL, NULL, "u001"), -- 2 play 5 + 1 notebook
+("Ped002", 584.4 , 0, NULL, NULL, "u002"), --3 calças jeans + 3 camisetas
+("Ped003", 5081.58, 0, NULL, NULL, "u002"), -- 4 bonés + playstation
+("Ped004", 280.44, 0, NULL, NULL, "u001" ), -- 2 camisetas dallas
+("Ped005", 19062.87, 0, NULL, NULL, "u003"), -- 1 notebook + 4 play + 3 bonés
+("Ped006", 300, 0, NULL,NULL, "u003"); --  2 clças
 
 UPDATE purchases
 SET delivered_at = DATETIME()
@@ -143,4 +145,46 @@ FROM purchases
 INNER JOIN users
 ON purchases.buyer_id = users.id
 WHERE buyer_id = "u002";
+
+-- tabela de relação de produtos e pedidos
+
+CREATE TABLE purchase_products(
+    purchase_id TEXT NOT NULL,
+    product_id TEXT NOT NULL,
+    quantity INTEGER NOT NULL,
+    FOREIGN KEY (purchase_id) REFERENCES purchases(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+DROP TABLE purchase_products;
+
+--OBS: acjo que na tabelça pruchase, eu tenho que fazer um unico pedido com o valor total de todos osprodutos do pedido, eu fiz umpedido pra cada produto
+-- OBS2: fiz isso na tabela purchases, coloquei alguns pedidos com mais de um produto
+
+INSERT INTO purchase_products (purchase_id, product_id, quantity)
+VALUES
+("Ped001", "P001", 2),
+("Ped001", "P004", 1),
+("Ped002", "P002", 3),
+("Ped002", "P005", 3),
+("Ped003", "P003", 4),
+("Ped003", "P001", 1 ),
+("Ped004", "P005", 2 ),
+("Ped005", "P004", 1 ),
+("Ped005", "P001", 4 ),
+("Ped005", "P003", 3 ),
+("Ped006", "P002", 2 );
+
+
+SELECT * FROM purchase_products
+INNER JOIN purchases
+ON purchase_products.purchase_id = purchases.id
+INNER JOIN products
+ON purchase_products.product_id = products.id;
+
+
+
+
+
+
 
