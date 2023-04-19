@@ -5,8 +5,11 @@ CREATE TABLE users(
     id TEXT NOT NULL UNIQUE PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    created_at TEXT DEFAULT (DATETIME('now', 'localtime')) NOT NULL
 );
+
+DROP TABLE users;
 
 
 -- POPULANDO A TABELA --
@@ -23,12 +26,16 @@ CREATE TABLE products(
     id TEXT  NOT NULL UNIQUE PRIMARY KEY,
     name TEXT NOT NULL,
     price REAL NOT NULL,
-    category TEXT NOT NULL
+    category TEXT NOT NULL,
+    description TEXT NOT NULL,
+    imageUrl TEXT NOT NULL
 );
+
+DROP TABLE products;
 
 -- populando a tabela--
 
-INSERT INTO products(id, name, price, category)
+INSERT INTO products (id, name, price, category, description, "imageUrl")
 VALUES
 ("P001", "Iphone", 1000, "Eletrônicos"),
 ("P002", "Calça Jeans", 150, "Roupas e calçados"),
@@ -45,7 +52,7 @@ SELECT * FROM products;
 -- Search products by name --
 
 SELECT * FROM products
-WHERE name LIKE "%Boné%";
+WHERE name LIKE  "%Boné%";
 
 -- Create user --
 INSERT INTO users (id, name, email, password)
@@ -54,7 +61,7 @@ VALUES
 
 -- Create product --
 
-INSERT INTO products(id, name, price, category)
+INSERT INTO products (id, name, price, category, description, imageUrl)
 VALUES
 ("P006", "Brinco feminino", 5.12, "Acessórios");
 
@@ -108,12 +115,11 @@ ORDER BY price ASC;
 
 CREATE TABLE purchases(
     id TEXT UNIQUE NOT NULL PRIMARY KEY,
-    total_price REAL NOT NULL,
+    buyer TEXT NOT NULL,
+    total_price REAL NOT NULL,    
+    created_at TEXT DEFAULT (DATETIME('now', 'localtime')) NOT NULL,
     paid INTEGER NOT NULL,
-    created_at TEXT,
-    delivered_at TEXT,
-    buyer_id TEXT NOT NULL,
-    FOREIGN KEY (buyer_id) REFERENCES users(id)
+    FOREIGN KEY (buyer) REFERENCES users(id)
 );
 
 DROP Table purchases;
