@@ -10,21 +10,6 @@ import { type } from "os";
 import { stringify } from "querystring";
 import { serialize } from "v8";
 
-//inciar servidor na porta 3003
-
-
-// console.log(users, products, purchase)
-
-// createUser("u003", "Renato", "renato@email.com", "456789")
-// getAllUsers()
-// createProduct("P003", "Brinco Feminino", 12.50, CATEGORY.ACCESSORIES)
-// getAllProducts()
-// console.log("produto por id", getProductById("P003"))
-// console.table(queryProductsByName("iphone"))
-// createPurchase("Renato", "P003", 3, 37.50)
-// console.log(getAllPurchasesFromUserId("Renato"))
-
-//inciar servidor na porta 3003
 const app = express()
 app.use(express.json())
 app.use(cors())
@@ -38,106 +23,12 @@ app.get("/ping", (req: Request, res: Response) => {
 })
 
 
-//endpoints
+
 
 // POSTS
 
-/*//createUser (cria um usuario na lista users) NORMAL E KNEX ABAIXO
+//User
 
-// app.post("/users", (req: Request, res: Response) => {
-//     try {
-//         const id: string | undefined = req.body.id
-//         const name: string | undefined = req.body.name
-//         const email: string | undefined = req.body.email
-//         const password: string | undefined = req.body.password
-//         //validação de id
-//         if (id !== undefined) {
-//             if (typeof id === "string") {
-//                 const verifyNewId: TUser | undefined = users.find((user) => user.id === id)
-//                 if (verifyNewId) {
-//                     res.status(400)
-//                     throw new Error("ja existe um usuario com o mesmo id, envie outro valor")
-//                 }
-//                 if (id.length < 4) {
-//                     res.status(400)
-//                     throw new Error("o id do usuario deve ter pelo menos 4 caracteres, começando pela letra u minicusula")
-//                 }
-//                 if (id[0] !== "u") {
-//                     res.status(400)
-//                     throw new Error("o primeiro caracetere da id devee ser a letra u minuscula")
-//                 }
-//             } else {
-//                 res.status(400)
-//                 throw new Error("o id deve ser uma string")
-//             }
-
-//         } else {
-//             res.status(400)
-//             throw new Error("o id deve ser um valor valido")
-//         }
-
-//         //validação name
-//         if (name !== undefined) {
-//             if (typeof name !== "string") {
-//                 res.status(400)
-//                 throw new Error("o nome deve estar em string")
-
-//             }
-
-//         } else {
-//             res.status(400)
-//             throw new Error("o name deve ser um valor valido")
-//         }
-
-//         //validação do email
-//         if (email !== undefined) {
-//             if (typeof email === "string") {
-//                 const verifyNewEmail: TUser | undefined = users.find((user) => user.email === email)
-//                 if (verifyNewEmail) {
-//                     res.status(400)
-//                     throw new Error("ja existe um usuario com o mesmo email, envie um email diferente")
-//                 }
-//             } else {
-//                 res.status(400)
-//                 throw new Error("o email deve ser uma string")
-//             }
-
-//         } else {
-//             res.status(400)
-//             throw new Error("o email deve ser um valor valido")
-//         }
-
-//         //validação password
-//         if (password !== undefined) {
-//             if (typeof password !== "string") {
-//                 res.status(400)
-//                 throw new Error("O password deve ser uma string")
-
-//             }
-
-//         } else {
-//             res.status(400)
-//             throw new Error("o password deve ser um valor valido")
-//         }
-
-
-//         const newUser: TUser = { id, name, email, password }
-
-//         users.push(newUser)
-//         console.log("usuarios", users)
-//         res.status(201).send("usuario incluido com sucesso")
-//     } catch (err) {
-
-//         if (res.statusCode === 200) {
-//             res.status(500)
-//         }
-
-//         console.log(err)
-//         res.send(err.message)
-
-//     }
-// })*/
-//REfatorado com query builder, depois apagar o antigo
 app.post("/users", async (req: Request, res: Response) => {
     try {
         const id: string | undefined = req.body.id
@@ -259,97 +150,8 @@ app.post("/users", async (req: Request, res: Response) => {
 
 })
 
-//createProduct (cria um novo produto na lista deprodutos) NORMAL E ABAIXO KNEX
-// refatorado com query builder, apgar o antigo
-/*// app.post("/products", (req: Request, res: Response) => {
+//Product 
 
-//     try {
-//         const id: string | undefined = req.body.id
-//         const name: string | undefined = req.body.name
-//         const price: number | undefined = req.body.price
-//         const category: CATEGORY | undefined = req.body.category
-
-//         //validação id do produto (se o id não é undefined, se é string, se possui 4 caracteres no minimo e se o primeiro caraceter é a letra P maisucula)
-//         if (id !== undefined) {
-//             if (typeof id === "string") {
-//                 const searchProductId: TProduct = products.find((product) => product.id === id)
-//                 if (searchProductId) {
-//                     res.status(400)
-//                     throw new Error("ja existe um produto com o mesmo id, cadastre um valor diferente")
-//                 }
-//                 if (id.length < 4) {
-//                     res.status(400)
-//                     throw new Error("o id do produto deve possuir pelo menos 4 caracteres, o primeiro sendo a letra P maiuscula")
-//                 }
-//                 if (id[0] !== "P") {
-//                     res.status(400)
-//                     throw new Error("o primeiro caractere do id deve ser a letra P maiuscula ")
-//                 }
-
-//             }
-
-//         } else {
-//             res.status(400)
-//             throw new Error("o id deve ser um valor valido")
-//         }
-
-//         //validação name
-
-//         if (name !== undefined) {
-//             if (typeof name !== "string") {
-//                 res.status(400)
-//                 throw new Error("o nome do produto deve ser em string")
-//             }
-
-//         } else {
-//             res.status(400)
-//             throw new Error("nome invalido, insira um valor")
-//         }
-
-//         //validação price
-
-//         if (price !== undefined) {
-//             if (typeof price !== "number") {
-//                 res.status(400)
-//                 throw new Error("valor invalido, o preco deve ser um numero")
-//             }
-
-//         } else {
-//             res.status(400)
-//             throw new Error("preço invalido, insira um valor valido")
-//         }
-
-//         //validação category
-
-//         if (category !== undefined) {
-//             if (category !== CATEGORY.ACCESSORIES && category !== CATEGORY.CLOTHES_AND_SHOES && category !== CATEGORY.ELECTRONICS) {
-//                 res.status(400)
-//                 throw new Error("categoria invalida, escolha entre Acessórios, Roupas e calçados ou Eletrônicos")
-
-//             }
-
-//         } else {
-//             res.status(400)
-//             throw new Error("Categoria invalida, insiria uma categoria valida")
-
-//         }
-
-//         const newProduct: TProduct = { id, name, price, category }
-
-//         products.push(newProduct)
-//         console.log("endpoint lista dosprodutos", products)
-
-//         res.status(201).send("produto incluido com sucesso")
-//     } catch (err) {
-//         if (res.statusCode === 200) {
-//             res.status(500)
-//         }
-
-//         console.log(err)
-//         res.send(err.message)
-//     }
-
-// })*/
 app.post("/products", async (req: Request, res: Response) => {
 
     try {
@@ -492,105 +294,8 @@ app.post("/products", async (req: Request, res: Response) => {
 
 })
 
-//cretePuchase (cria uma nova compra) NORMAL E ABAIXO KNEX
-//refatorado query builder
-// REFATORA COM QUERY BUILDER
-/*app.post("/purchases", (req: Request, res: Response) => {
-    try {
-        const userId: string = req.body.userId
-        const productId: string = req.body.productId
-        const quantity: number = req.body.quantity
-        const totalPrice: number = req.body.totalPrice
+//Purchase  
 
-        //validação id do usuario
-        if (userId !== undefined) {
-            if (typeof userId === "string") {
-                const searchUserIdInUsers: TUser | undefined = users.find((user) => user.id === userId)
-                if (!searchUserIdInUsers) {
-                    res.status(400)
-                    throw new Error("id do usuario não cadastrado. Informe um id cadastrado ou cadastre-se")
-
-                }
-
-            } else {
-                res.status(400)
-                throw new Error("valor invalido, insira um id no formato de string")
-            }
-
-        } else {
-            res.status(400)
-            throw new Error("compra invalida, insira um valor valido")
-        }
-
-        //validação id do produto
-        if (productId !== undefined) {
-            if (typeof productId === "string") {
-                const searchProductId: TProduct | undefined = products.find((product) => product.id === productId)
-                if (!searchProductId) {
-                    res.status(400)
-                    throw new Error("id do produto não existe, insira um id existente")
-                }
-
-            } else {
-                res.status(400)
-                throw new Error("id do produto em formato invalido, deve ser uma string")
-            }
-
-        } else {
-            res.status(400)
-            throw new Error("id invalido, insira um id valido")
-        }
-
-        //validação quantity
-        if (quantity !== undefined) {
-            if (typeof quantity !== "number") {
-                res.status(400)
-                throw new Error("tipo de valor invalido, insira o valor no formato number")
-            }
-
-        } else {
-            res.status(400)
-            throw new Error("valor de quantidade invalido, insira um valor valido")
-        }
-
-        //validação total price
-        if (totalPrice !== undefined) {
-            if (typeof totalPrice !== "number") {
-                res.status(400)
-                throw new Error("total price formato invalido, o formato deve ser number")
-            } else if (typeof totalPrice === "number") {
-                const searchProductOfPurchase: TProduct = products.find((product) => product.id === productId)
-                if (searchProductOfPurchase.price * quantity !== totalPrice) {
-                    res.status(400)
-                    throw new Error("total da compra invalido, o total deve ser a quantidade X o valor unitario")
-                }
-
-            }
-
-
-        } else {
-            res.status(400)
-            throw new Error("valor de totalprice invalido, insira um valor valido")
-        }
-
-        const newPurchase: TPurchase = { userId, productId, quantity, totalPrice }
-
-
-        purchase.push(newPurchase)
-        console.log("endpoint lista de compras", purchase)
-
-        res.status(201).send("nova compra incluida com sucesso")
-    } catch (err) {
-        if (res.statusCode === 200) {
-            res.status(500)
-        }
-
-        console.log(err)
-        res.send(err.message)
-
-    }
-
-})*/
 app.post("/purchases", async (req: Request, res: Response) => {
     try {
         const buyer: string = req.body.buyer
@@ -729,32 +434,12 @@ app.post("/purchases", async (req: Request, res: Response) => {
     }
 
 })
+
 // GET 
-/*getAllUsers (lista todos os usuarios da lista) NORMAL E COM KNEX ABAIXO
-
-// app.get("/users", (req: Request, res: Response) => {
-//     try {
-//         res.status(200).send(users)
-//     } catch (err) {
-
-//         if (res.statusCode === 200) {
-//             res.status(500)
-//         }
-
-//         console.log(err)
-//         res.send(err.message)
-
-//     }
-// })*/
+//AllUsers 
 
 app.get("/users", async (req: Request, res: Response) => {
         try {
-
-            // const result = await db.raw(`
-            //     SELECT * FROM users;            
-            // `)
-
-            //refatorado query builder
 
             const result = await db("users")
             res.status(200).send(result)
@@ -770,31 +455,11 @@ app.get("/users", async (req: Request, res: Response) => {
         }
     })
 
-// getAllProducts (lista todos os produtos) NORMAL E COM KNEX ABAIXO
+//AllProducts  
 
-// app.get("/products", (req: Request, res: Response) => {
-//     try {
-//         res.status(200).send(products)
-//     } catch (err) {
-
-//         if (res.statusCode === 200) {
-//             res.status(500)
-//         }
-
-//         console.log(err)
-//         res.send(err.message)
-
-//     }
-
-// })
 app.get("/products", async (req: Request, res: Response) => {
     try {
 
-        // const result  = await db.raw(`
-        //      SELECT * FROM products;
-        // `)
-
-        //refatorado query buiilder
         const result = await db("products")
         res.status(200).send(result)
     } catch (err) {
@@ -810,37 +475,8 @@ app.get("/products", async (req: Request, res: Response) => {
 
 })
 
-//searchProductbyName
+//ProductbyName
 
-// app.get("/products/search", async (req: Request, res: Response) => {
-
-//     try {
-
-//         const q = req.query.q as string
-
-//         if (q.length < 1) {
-//             res.status(400)
-//             throw new Error("a query deve possuir mais de 1 caractere")
-//         }
-
-//         const result = q ?
-//             products.filter(product => product.name.toLowerCase().includes(q.toLowerCase()))
-//             :
-//             products
-
-//         res.status(200).send(result)
-//     } catch (err) {
-
-//         if (res.statusCode === 200) {
-//             res.status(500)
-//         }
-
-//         console.log(err)
-//         res.send(err.message)
-
-//     }
-
-// })
 app.get("/products/search", async (req: Request, res: Response) => {
 
     try {
@@ -852,13 +488,7 @@ app.get("/products/search", async (req: Request, res: Response) => {
             throw new Error("a query deve possuir mais de 1 caractere")
         }
 
-        // const result = await db.raw(`
-        //     SELECT * FROM products
-        //     WHERE name LIKE "%${q}%"
-        
-        // `)
-
-        //refaotrado query builderr
+       
         const result = await db("products")
         .where("name", "LIKE", `%${q}%`)
 
@@ -876,38 +506,8 @@ app.get("/products/search", async (req: Request, res: Response) => {
 
 })
 
-//getProductsbyID NORMAL E KNEX ABAIXO
+//ProductsbyID 
 
-/*app.get("/products/:id", (req: Request, res: Response) => {
-    try {
-        const id = req.params.id as string
-
-        if (id.length < 4) {
-            res.status(400)
-            throw new Error("a id deve ter no minimo 4 caracteres e deve começar com a letra P maisucula")
-        }
-        if (id[0] !== "P") {
-            res.status(400)
-            throw new Error("a id deve começar com a letra P maiscula e ter 4 caracertese no minimo")
-        }
-        const result: TProduct | undefined = products.find((product) => product.id === id)
-        //validação da existencia do produto
-        if (!result) {
-            res.status(400)
-            throw new Error("porduto não existente")
-        }
-
-        res.status(200).send(result)
-    } catch (err) {
-        if (res.statusCode === 200) {
-            res.status(500)
-        }
-
-        console.log(err)
-        res.send(err.message)
-    }
-
-})*/
 app.get("/products/:id", async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string
@@ -920,12 +520,7 @@ app.get("/products/:id", async (req: Request, res: Response) => {
             res.status(400)
             throw new Error("a id deve começar com a letra P maiscula e ter 4 caracertese no minimo")
         }
-        // const [result] = await db.raw(`
-        //     SELECT * FROM products
-        //     WHERE id = "${id}";
-        // `)
-
-        //refatorado query builder
+       
         const [result] = await db("products").where({id:id})
 
         //validação da existencia do produto
@@ -945,9 +540,11 @@ app.get("/products/:id", async (req: Request, res: Response) => {
     }
 
 })
-//getUserPurchasesByID NORMAL E KNEX ABAIXO
 
-/*app.get("/users/:id/purchases", (req: Request, res: Response) => {
+//UserPurchasesByID 
+
+
+app.get("/users/:id/purchases", async (req: Request, res: Response) => {
 
     try {
         const id: string = req.params.id
@@ -956,7 +553,9 @@ app.get("/products/:id", async (req: Request, res: Response) => {
 
         if (id !== undefined) {
             if (typeof id === "string") {
-                const searchUser: TUser = users.find((user) => user.id === id)
+                
+                const searchUser = await db("users").where({id:id})
+
                 if (!searchUser) {
                     res.status(400)
                     throw new Error("usuario não encontrado, forneça um id existente")
@@ -968,7 +567,25 @@ app.get("/products/:id", async (req: Request, res: Response) => {
             throw new Error("id invalida, insira um formato valido")
         }
 
-        const result = purchase.filter((purchase) => purchase.userId.toLowerCase() === id.toLowerCase())
+            
+            const [result] = await db("purchases")
+            .select(
+                "purchases.id AS IdCompra",
+                "purchases.total_price AS TotalCompra",
+                "purchases.created_at AS dataCompra",
+                "purchases.paid AS statusPagamento",
+                "users.id AS idCOmprador",
+                "users.email AS emailComprador",
+                "users.name AS nomeComprador"
+            )
+            .where({buyer:id})
+            .innerJoin("users", "purchases.buyer", "=", "users.id")
+            
+            
+           
+            if(!result){
+                throw new Error("usuariuo nao tem compra")
+            }
 
         res.status(200).send(result)
     } catch (err) {
@@ -980,78 +597,10 @@ app.get("/products/:id", async (req: Request, res: Response) => {
         res.send(err.message)
     }
 
-})*/
+})
 
 
-// GET PURCHASES BY USER ID
-
-// app.get("/users/:id/purchases", async (req: Request, res: Response) => {
-
-//     try {
-//         const id: string = req.params.id
-
-//         //validação existencia do usuario
-
-//         if (id !== undefined) {
-//             if (typeof id === "string") {
-//                 // const searchUser = await db.raw(`
-//                 //     SELECT * FROM users
-//                 //     WHERE id = "${id}";
-//                 // `)
-
-//                 //refatorado query builder
-//                 const searchUser = await db("users").where({id:id})
-
-//                 if (!searchUser) {
-//                     res.status(400)
-//                     throw new Error("usuario não encontrado, forneça um id existente")
-//                 }
-//             }
-
-//         } else {
-//             res.status(400)
-//             throw new Error("id invalida, insira um formato valido")
-//         }
-
-//             // const [result] = await db.raw(`
-//             //     SELECT * FROM purchases
-//             //     WHERE buyer = "${id}";
-//             // `)
-
-//             //refatorado query builder 
-//             const [result] = await db("purchases")
-//             .select(
-//                 "purchases.id AS IdCompra",
-//                 "purchases.total_price AS TotalCompra",
-//                 "purchases.created_at AS dataCompra",
-//                 "purchases.paid AS statusPagamento",
-//                 "users.id AS idCOmprador",
-//                 "users.email AS emailComprador",
-//                 "users.name AS nomeComprador"
-//             )
-//             .where({buyer:id})
-//             .innerJoin("users", "purchases.buyer", "=", "users.id")
-            
-            
-           
-//             if(!result){
-//                 throw new Error("usuariuo nao tem compra")
-//             }
-
-//         res.status(200).send(result)
-//     } catch (err) {
-//         if (res.statusCode === 200) {
-//             res.status(500)
-//         }
-
-//         console.log(err)
-//         res.send(err.message)
-//     }
-
-// })
-
-
-// GET PURCHASES BY ID
+// PURCHASES BY ID
 app.get("/purchases/:id", async (req: Request, res: Response) => {
 
     try {
@@ -1112,9 +661,9 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
 
 //PUT
 
-//edituserByID (edita os dados de um usuario)
+//userByID 
 
-app.put("/users/:id", (req: Request, res: Response) => {
+app.put("/users/:id", async(req: Request, res: Response) => {
     try {
         const id: string = req.params.id
         const newName: string = req.body.name
@@ -1163,7 +712,7 @@ app.put("/users/:id", (req: Request, res: Response) => {
             }
 
 
-            const searchUser: TUser | undefined = users.find((user) => user.id === id)
+            const [searchUser] = await db("users").where({id:id})
 
             //validação ususario
             if (searchUser === undefined) {
@@ -1173,13 +722,16 @@ app.put("/users/:id", (req: Request, res: Response) => {
 
             console.log("antes da edição", searchUser)
             if (searchUser) {
-                searchUser.email = newEmail || searchUser.email
-                searchUser.password = newPassword || searchUser.password
-                searchUser.name = newName || searchUser.name
-            }
-            console.log("apos edição", searchUser);
 
+                const updatedUser = {
+                    name: newName || searchUser.name,
+                    email: newEmail || searchUser.email,
+                    password: newPassword || searchUser.password
+                }
 
+                await db("users").update(updatedUser).where({id:id})
+                             
+            }  
 
             res.status(201).send("usuarios editado com sucesso")
         }
@@ -1195,9 +747,9 @@ app.put("/users/:id", (req: Request, res: Response) => {
 
 })
 
-//editProductById (edita um produto)
+//ProductById 
 
-app.put("/products/:id", (req: Request, res: Response) => {
+app.put("/products/:id", async (req: Request, res: Response) => {
     try {
         const id: string = req.params.id
         const newName: string | undefined = req.body.name
@@ -1249,18 +801,26 @@ app.put("/products/:id", (req: Request, res: Response) => {
             }
         }
 
-        const searchProduct: TProduct | undefined = products.find((product) => product.id === id)
+        const [searchProduct] = await db ("products").where({id:id})
 
         //validação existencia do produto
         if (searchProduct === undefined) {
             res.status(400)
             throw new Error("produto não encontrado")
         }
-        console.log("produto antes da edição", searchProduct)
+        
         if (searchProduct) {
-            searchProduct.name = newName || searchProduct.name
-            searchProduct.price = isNaN(newPrice) ? searchProduct.price : newPrice
-            searchProduct.category = newCategory || searchProduct.category
+
+            const updatedProduct = {
+                name: newName || searchProduct.name,
+                price: newPrice || searchProduct.price,
+                category: newCategory || searchProduct.category
+            }
+
+            await db("products").update(updatedProduct).where({id:id})
+
+
+            
 
         }
         console.log("produto apos edição", searchProduct)
@@ -1279,9 +839,9 @@ app.put("/products/:id", (req: Request, res: Response) => {
 
 //DELETE
 
-//delteUserById (deleta um usuario )
+//UserById 
 
-app.delete("/users/:id", (req: Request, res: Response) => {
+app.delete("/users/:id", async (req: Request, res: Response) => {
     try {
         const id: string = req.params.id
 
@@ -1303,23 +863,19 @@ app.delete("/users/:id", (req: Request, res: Response) => {
                 throw new Error("o id deve ser uma string")
             }
 
-            const findUser: number = users.findIndex((user) => user.id === id)
+            const findUser = await db("users").where({id:id})
 
             //validação existencia usuario
 
-            if (findUser === -1) {
+            if (!findUser) {
                 res.status(400)
                 throw new Error("usuario não encontrado")
             }
 
+            await db ("users").delete().where({id:id})
 
-            let message: string = "usuario deletado"
-            if (findUser >= 0) {
-
-                users.splice(findUser, 1)
-            }
-
-            res.status(200).send(message)
+            
+            res.status(200).send("usuario deleteado com sucesso")
         }
     } catch (err) {
         if (res.statusCode === 200) {
@@ -1332,9 +888,9 @@ app.delete("/users/:id", (req: Request, res: Response) => {
 
 })
 
-//dleteProductById (deleta um produto)
+//ProductById 
 
-app.delete("/products/:id", (req: Request, res: Response) => {
+app.delete("/products/:id", async (req: Request, res: Response) => {
 
     try {
         const id: string = req.params.id
@@ -1360,22 +916,19 @@ app.delete("/products/:id", (req: Request, res: Response) => {
             throw new Error("o id deve ser um valor valido")
         }
 
-        const findProduct = products.findIndex((product) => product.id === id)
+        const findProduct = await db("products").where({id:id})
 
         //validação existencia do produto
-        if (findProduct === -1) {
+        if (!findProduct ) {
             res.status(400)
             throw new Error("produto não encontrado")
         }
 
+        await db ("products").delete().where({id:id})
 
-        let message: string = "produto deletado"
-        if (findProduct >= 0) {
+       
 
-            products.splice(findProduct, 1)
-        }
-
-        res.status(200).send(message)
+        res.status(200).send("produto deletado com sucesso")
     } catch (err) {
         if (res.statusCode === 200) {
             res.status(500)
@@ -1386,4 +939,3 @@ app.delete("/products/:id", (req: Request, res: Response) => {
     }
 
 })
-//teste

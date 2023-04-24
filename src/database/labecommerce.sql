@@ -126,12 +126,12 @@ DROP Table purchases;
 
 INSERT INTO purchases (id,total_price,paid,created_at,delivered_at,buyer_id)
 VALUES
-("Ped001", 14057.32, 0, NULL, NULL, "u001"), -- 2 play 5 + 1 notebook
-("Ped002", 584.4 , 0, NULL, NULL, "u002"), --3 calças jeans + 3 camisetas
-("Ped003", 5081.58, 0, NULL, NULL, "u002"), -- 4 bonés + playstation
-("Ped004", 280.44, 0, NULL, NULL, "u001" ), -- 2 camisetas dallas
-("Ped005", 19062.87, 0, NULL, NULL, "u003"), -- 1 notebook + 4 play + 3 bonés
-("Ped006", 300, 0, NULL,NULL, "u003"); --  2 clças
+("Ped001", 14057.32, 0, NULL, NULL, "u001"), 
+("Ped002", 584.4 , 0, NULL, NULL, "u002"), 
+("Ped003", 5081.58, 0, NULL, NULL, "u002"),
+("Ped004", 280.44, 0, NULL, NULL, "u001" ), 
+("Ped005", 19062.87, 0, NULL, NULL, "u003"), 
+("Ped006", 300, 0, NULL,NULL, "u003"); 
 
 UPDATE purchases
 SET delivered_at = DATETIME()
@@ -164,8 +164,6 @@ CREATE TABLE purchase_products(
 
 DROP TABLE purchase_products;
 
---OBS: acjo que na tabelça pruchase, eu tenho que fazer um unico pedido com o valor total de todos osprodutos do pedido, eu fiz umpedido pra cada produto
--- OBS2: fiz isso na tabela purchases, coloquei alguns pedidos com mais de um produto
 
 INSERT INTO purchase_products (purchase_id, product_id, quantity)
 VALUES
