@@ -7,6 +7,8 @@ import { TPurchase } from "./types";
 import { db } from "./database/knex";
 import { error } from "console";
 import { type } from "os";
+import { stringify } from "querystring";
+import { serialize } from "v8";
 
 //inciar servidor na porta 3003
 
@@ -38,9 +40,9 @@ app.get("/ping", (req: Request, res: Response) => {
 
 //endpoints
 
-/*// POST
+// POSTS
 
-//createUser (cria um usuario na lista users) NORMAL E KNEX ABAIXO
+/*//createUser (cria um usuario na lista users) NORMAL E KNEX ABAIXO
 
 // app.post("/users", (req: Request, res: Response) => {
 //     try {
@@ -135,7 +137,7 @@ app.get("/ping", (req: Request, res: Response) => {
 
 //     }
 // })*/
-
+//REfatorado com query builder, depois apagar o antigo
 app.post("/users", async (req: Request, res: Response) => {
     try {
         const id: string | undefined = req.body.id
@@ -145,10 +147,13 @@ app.post("/users", async (req: Request, res: Response) => {
         //validação de id
         if (id !== undefined) {
             if (typeof id === "string") {
-                const [verifyIfIdExists] = await db.raw(`
-                    SELECT * FROM users
-                    WHERE id = "${id}";                    
-                `)
+                // const [verifyIfIdExists] = await db.raw(`
+                //     SELECT * FROM users
+                //     WHERE id = "${id}";                    
+                // `)
+
+                //refatorado query builder
+                const [verifyIfIdExists] = await db("users").where({id:id})
 
                 console.log("teste user knex",verifyIfIdExists)
                 if (verifyIfIdExists) {
@@ -189,10 +194,13 @@ app.post("/users", async (req: Request, res: Response) => {
         //validação do email
         if (email !== undefined) {
             if (typeof email === "string") {
-                const [verifyIfEmailExist] = await db.raw(`
-                SELECT * FROM users
-                WHERE email = "${email}"; 
-                `)
+                // const [verifyIfEmailExist] = await db.raw(`
+                // SELECT * FROM users
+                // WHERE email = "${email}"; 
+                // `)
+
+                //refatorado query builder
+                const [verifyIfEmailExist] = await db("users").where({email:email})
                 if (verifyIfEmailExist) {
                     res.status(400)
                     throw new Error("ja existe um usuario com o mesmo email, envie um email diferente")
@@ -220,13 +228,23 @@ app.post("/users", async (req: Request, res: Response) => {
             throw new Error("o password deve ser um valor valido")
         }
 
-        await db.raw(`
-        INSERT INTO users (id, name, email, password)
-        VALUES
-        ("${id}", "${name}", "${email}", "${password}");
+        // await db.raw(`
+        // INSERT INTO users (id, name, email, password)
+        // VALUES
+        // ("${id}", "${name}", "${email}", "${password}");
         
-        `)
+        // `)
+
+        //refatorado query builder
+
+        const newUser ={
+            id:id,
+            name:name,
+            email:email,
+            password:password
+        }
         
+        await db("users").insert(newUser)
         res.status(201).send("usuario incluido com sucesso")
     } catch (err) {
 
@@ -242,7 +260,7 @@ app.post("/users", async (req: Request, res: Response) => {
 })
 
 //createProduct (cria um novo produto na lista deprodutos) NORMAL E ABAIXO KNEX
-
+// refatorado com query builder, apgar o antigo
 /*// app.post("/products", (req: Request, res: Response) => {
 
 //     try {
@@ -345,10 +363,15 @@ app.post("/products", async (req: Request, res: Response) => {
         //validação id do produto (se o id não é undefined, se é string, se possui 4 caracteres no minimo e se o primeiro caraceter é a letra P maisucula)
         if (id !== undefined) {
             if (typeof id === "string") {
-                const [searchProductId] = await db.raw(`
-                    SELECT * FROM products
-                    WHERE id = "${id}"                
-                `)
+                // const [searchProductId] = await db.raw(`
+                //     SELECT * FROM products
+                //     WHERE id = "${id}"                
+                // `)
+
+                //refatorado query builder
+                const [searchProductId] = await db("products").where({id:id})
+
+                
                 if (searchProductId) {
                     res.status(400)
                     throw new Error("ja existe um produto com o mesmo id, cadastre um valor diferente")
@@ -436,13 +459,26 @@ app.post("/products", async (req: Request, res: Response) => {
             throw new Error("URL da imagem invalida, insira um valor valido")
         }
 
-       await db.raw(`
-            INSERT INTO products (id, name, price, category, description, "imageUrl")
-            VALUES
-            ("${id}", "${name}", "${price}", "${category}", "${description}", "${imageUrl}");
+    //    await db.raw(`
+    //         INSERT INTO products (id, name, price, category, description, "imageUrl")
+    //         VALUES
+    //         ("${id}", "${name}", "${price}", "${category}", "${description}", "${imageUrl}");
        
-       `)
-        console.log("endpoint lista dosprodutos", products)
+    //    `)
+
+    //refatroado com query builder
+        const newProduct = {
+            id:id,
+            name:name,
+            price:price,
+            category:category,
+            description:description,
+            imageUrl:imageUrl
+        }
+
+        await db("products").insert(newProduct)
+
+        console.log("endpoint lista dosprodutos")
 
         res.status(201).send("produto incluido com sucesso")
     } catch (err) {
@@ -457,7 +493,8 @@ app.post("/products", async (req: Request, res: Response) => {
 })
 
 //cretePuchase (cria uma nova compra) NORMAL E ABAIXO KNEX
-
+//refatorado query builder
+// REFATORA COM QUERY BUILDER
 /*app.post("/purchases", (req: Request, res: Response) => {
     try {
         const userId: string = req.body.userId
@@ -556,53 +593,21 @@ app.post("/products", async (req: Request, res: Response) => {
 })*/
 app.post("/purchases", async (req: Request, res: Response) => {
     try {
-        const id: string = req.body.id
         const buyer: string = req.body.buyer
-        const totalPrice: number = req.body.totalPrice
-        const paid: number = req.body.paid       
-        
-
-        //validação id da compra
-        if (id !== undefined) {
-            if (typeof id === "string") {
-                const [searchIfPurchaseIdExist] = await db.raw(`
-                        SELECT * FROM purchases
-                        WHERE id = "${id}";
-                `)
-                if (searchIfPurchaseIdExist) {
-                    res.status(400)
-                    throw new Error("compra ja existe, cadatres outro id")
-
-                }
-
-                if(id.length < 7){
-                    res.status(400)
-                    throw new Error("O id deve ter no minimo 7 caracteres e começar com a sigla 'pur'")
-                }
-
-                // if(id[0] !== "p" && id[1] !== "u" && id[2]!== "r"){
-                //     res.status(400)
-                //     throw new Error("Os tres primeiros caracteres do id devem ser s sigla 'pur' em letras minucusculas ")
-                // }
-
-            } else {
-                res.status(400)
-                throw new Error("valor invalido, insira um id no formato de string começando com a sigla 'pur' minuscula seguida de 4 numeors ")
-            }
-
-        } else {
-            res.status(400)
-            throw new Error("compra invalida, insira um valor valido")
-        }
+        const total_price: number = req.body.totalPrice
+        const paid: number = req.body.paid     
+        const purchase_id: string = Math.floor(Date.now() * Math.random()).toString(36)
+        const product_id: string = req.body.product_id
+        const quantity: number = req.body.quantity
+         
 
         //validação do buyer
         if (buyer !== undefined) {
             if (typeof buyer=== "string") {
-                const [searchIfBuyerIsRegistered] = await db.raw(`
-                    SELECT * FROM users
-                    WHERE id = "${buyer}";
+               
+                const [searchIfBuyerIsRegistered] = await db("users").where({id:buyer})
 
-                `)
+
                 if (!searchIfBuyerIsRegistered) {
                     res.status(400)
                     throw new Error("id do comprador não encontrado, por favor, cadastre-se")
@@ -619,8 +624,8 @@ app.post("/purchases", async (req: Request, res: Response) => {
         }
 
         //validação totalprice
-        if (totalPrice !== undefined) {
-            if (typeof totalPrice !== "number") {
+        if (total_price !== undefined) {
+            if (typeof total_price !== "number") {
                 res.status(400)
                 throw new Error("tipo de valor invalido, insira o valor no formato number")
             }
@@ -644,14 +649,72 @@ app.post("/purchases", async (req: Request, res: Response) => {
             res.status(400)
             throw new Error("valor de paid invalido, insira um valor no formato number")
         }
+
+        // validação porduct_id 
+
         
 
-       await db.raw (`
-            INSERT INTO purchases (id, buyer, total_price, paid )
-            VALUES
-            ("${id}", "${buyer}", ${totalPrice}, ${paid})
-       `)
+        
+        if ( product_id!== undefined) {          
+            if (typeof product_id !== "string" ) {
+                res.status(400)
+                throw new Error("tipo de valor de product_id invalido, insira o valor no formato string")
+            }
 
+            if(product_id.length < 4){
+                res.status(400)
+                throw new Error("id do produto deve ter ao menos 4 caracteres e começar com a letra 'P' maiuscula")
+            }
+
+                 
+
+            if(product_id[0] !== "P"){
+                res.status(400)
+                throw new Error("Primeiro carctere do id de produto deve ser a letra 'P' maisucula")
+            }
+
+            const verifyIfProductExist = await db("products").where({id:product_id})
+            
+            if(!verifyIfProductExist){
+                res.status(400)
+                throw new Error("indira um Id de produto existente")
+            }
+
+        } else {
+            res.status(400)
+            throw new Error("valor de produto invalido, insira um valor valido")
+        }
+
+        //verificação quantity
+        
+        if (quantity !== undefined) {
+            if(typeof quantity !== "number"){
+                res.status(400)
+                throw new Error("tipo de valor de quantity invalido, insira o valor no formato number")
+            }
+
+        } else {
+            res.status(400)
+            throw new Error("valor de quantidade invalido, insira um valor ")
+        }       
+
+
+        const newPurchase ={
+            id: purchase_id,
+            buyer:buyer,
+            total_price: total_price,
+            paid:paid
+        }
+        
+
+        const newPurchaseProduct = {
+            purchase_id: purchase_id,
+            product_id:product_id,
+            quantity:quantity
+        }
+        await db("purchases").insert(newPurchase)
+
+        await db("purchase_products").insert(newPurchaseProduct)
 
         
         res.status(201).send("nova compra incluida com sucesso")
@@ -687,9 +750,13 @@ app.post("/purchases", async (req: Request, res: Response) => {
 app.get("/users", async (req: Request, res: Response) => {
         try {
 
-            const result = await db.raw(`
-                SELECT * FROM users;            
-            `)
+            // const result = await db.raw(`
+            //     SELECT * FROM users;            
+            // `)
+
+            //refatorado query builder
+
+            const result = await db("users")
             res.status(200).send(result)
         } catch (err) {
     
@@ -723,9 +790,12 @@ app.get("/users", async (req: Request, res: Response) => {
 app.get("/products", async (req: Request, res: Response) => {
     try {
 
-        const result  = await db.raw(`
-             SELECT * FROM products;
-        `)
+        // const result  = await db.raw(`
+        //      SELECT * FROM products;
+        // `)
+
+        //refatorado query buiilder
+        const result = await db("products")
         res.status(200).send(result)
     } catch (err) {
 
@@ -782,11 +852,15 @@ app.get("/products/search", async (req: Request, res: Response) => {
             throw new Error("a query deve possuir mais de 1 caractere")
         }
 
-        const result = await db.raw(`
-            SELECT * FROM products
-            WHERE name LIKE "%${q}%"
+        // const result = await db.raw(`
+        //     SELECT * FROM products
+        //     WHERE name LIKE "%${q}%"
         
-        `)
+        // `)
+
+        //refaotrado query builderr
+        const result = await db("products")
+        .where("name", "LIKE", `%${q}%`)
 
         res.status(200).send(result)
     } catch (err) {
@@ -846,10 +920,14 @@ app.get("/products/:id", async (req: Request, res: Response) => {
             res.status(400)
             throw new Error("a id deve começar com a letra P maiscula e ter 4 caracertese no minimo")
         }
-        const [result] = await db.raw(`
-            SELECT * FROM products
-            WHERE id = "${id}";
-        `)
+        // const [result] = await db.raw(`
+        //     SELECT * FROM products
+        //     WHERE id = "${id}";
+        // `)
+
+        //refatorado query builder
+        const [result] = await db("products").where({id:id})
+
         //validação da existencia do produto
         if (!result) {
             res.status(400)
@@ -904,38 +982,123 @@ app.get("/products/:id", async (req: Request, res: Response) => {
 
 })*/
 
-app.get("/users/:id/purchases", async (req: Request, res: Response) => {
+
+// GET PURCHASES BY USER ID
+
+// app.get("/users/:id/purchases", async (req: Request, res: Response) => {
+
+//     try {
+//         const id: string = req.params.id
+
+//         //validação existencia do usuario
+
+//         if (id !== undefined) {
+//             if (typeof id === "string") {
+//                 // const searchUser = await db.raw(`
+//                 //     SELECT * FROM users
+//                 //     WHERE id = "${id}";
+//                 // `)
+
+//                 //refatorado query builder
+//                 const searchUser = await db("users").where({id:id})
+
+//                 if (!searchUser) {
+//                     res.status(400)
+//                     throw new Error("usuario não encontrado, forneça um id existente")
+//                 }
+//             }
+
+//         } else {
+//             res.status(400)
+//             throw new Error("id invalida, insira um formato valido")
+//         }
+
+//             // const [result] = await db.raw(`
+//             //     SELECT * FROM purchases
+//             //     WHERE buyer = "${id}";
+//             // `)
+
+//             //refatorado query builder 
+//             const [result] = await db("purchases")
+//             .select(
+//                 "purchases.id AS IdCompra",
+//                 "purchases.total_price AS TotalCompra",
+//                 "purchases.created_at AS dataCompra",
+//                 "purchases.paid AS statusPagamento",
+//                 "users.id AS idCOmprador",
+//                 "users.email AS emailComprador",
+//                 "users.name AS nomeComprador"
+//             )
+//             .where({buyer:id})
+//             .innerJoin("users", "purchases.buyer", "=", "users.id")
+            
+            
+           
+//             if(!result){
+//                 throw new Error("usuariuo nao tem compra")
+//             }
+
+//         res.status(200).send(result)
+//     } catch (err) {
+//         if (res.statusCode === 200) {
+//             res.status(500)
+//         }
+
+//         console.log(err)
+//         res.send(err.message)
+//     }
+
+// })
+
+
+// GET PURCHASES BY ID
+app.get("/purchases/:id", async (req: Request, res: Response) => {
 
     try {
-        const id: string = req.params.id
+       
+        const idCompra = req.params.id
 
-        //validação existencia do usuario
+        console.log("valor do id por pArams", idCompra)
+        if(idCompra){
 
-        if (id !== undefined) {
-            if (typeof id === "string") {
-                const searchUser = await db.raw(`
-                    SELECT * FROM users
-                    WHERE id = "${id}";
-                `)
-                if (!searchUser) {
-                    res.status(400)
-                    throw new Error("usuario não encontrado, forneça um id existente")
-                }
-            }
+        const [buscarCompra] = await db("purchases").where({id:idCompra})
 
-        } else {
+        if(!buscarCompra ){
             res.status(400)
-            throw new Error("id invalida, insira um formato valido")
+            throw new Error("compra não encontrada")
         }
+    }
 
-            const [result] = await db.raw(`
-                SELECT * FROM purchases
-                WHERE buyer = "${id}";
-            `)
+    const [result] = await db("purchases")
+    .select(
+      "purchases.id",
+      "purchases.total_price AS TotalCompra",
+      "purchases.created_at AS dataCompra",
+      "purchases.paid AS statusPagamento",
+      "users.id AS numeroComprador",
+      "users.email AS emailComprador",
+      "users.name AS nomeComprador"
+    )
+    .innerJoin("users", "purchases.buyer", "=", "users.id")  
+    .where({"purchases.id":idCompra}) 
+    //OBS: nesse where eu coloquei o purchases:id em forma de string, em vez de id:idCompra. Isso pq esta dando um erro de ambiguidades, provavelmente pq as duas tabelas (users e purhchases) tem a propriedade id, mesmo com alias não funcionou.
+    
+    const [result2] = await db ("purchase_products")
+    .select(
+        "products.id AS idProduto",
+        "products.name AS nomeProduto",
+        "products.price AS preço",
+        "products.category AS categoria",
+        "products.description AS descrição",
+        "products.imageUrl AS imagem"
+    )
+    .where({purchase_id:idCompra})
+    .innerJoin("products", "purchase_products.product_id", "=", "products.id")
 
-            console.log("teste tipo", typeof result)
+        
+    res.status(200).send({result, productlist: result2})
+   
 
-        res.status(200).send(result)
     } catch (err) {
         if (res.statusCode === 200) {
             res.status(500)
